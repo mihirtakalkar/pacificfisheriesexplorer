@@ -6,23 +6,23 @@ library(ggplot2)
 library(ggthemes)
 library(rnaturalearth)
 
-
 # Data Import #
-# Directories #
-dataDir <- "data"
-plotDir <- "figures"
-tableDir <- "tables"
-sstdir <- "data/cobe"
-meowdir <- "data/meows/processed"
+  # Directories #
+  dataDir <- "data"
+  plotDir <- "figures"
+  tableDir <- "tables"
+  sstdir <- "data/cobe"
+  meowdir <- "data/meows/processed"
 
-# Source Files #
-source("E:/Important/RMP/Code/pacificfisheriesexplorer/code/monthly_fishery_scale.R")
-source("E:/Important/RMP/Code/pacificfisheriesexplorer/code/sst_region_explorer.R")
+  # Source Files #
+  source("E:/Important/RMP/Code/pacificfisheriesexplorer/code/monthly_fishery_scale.R")
+  source("E:/Important/RMP/Code/pacificfisheriesexplorer/code/sst_region_explorer.R")
+  source("E:/Important/RMP/Code/pacificfisheriesexplorer/code/catch_weighted_latitude.R")
 
-# Read Data #
-mexicoLandings = readRDS(file.path("E:/Important/RMP/Code/pacificfisheriesexplorer/data", "2001_2020_mexico_landings_datamares.Rds"))
-meows_orig <- readRDS(file.path("E:/Important/RMP/Code/pacificfisheriesexplorer/data/meows/processed/meows.Rds"))
-sst_orig <- read.csv(file.path("E:/Important/RMP/Code/pacificfisheriesexplorer/data/cobe/COBE_1891_2020_sst_by_ecoregion.csv"))
+  # Read Data #
+  mexicoLandings = readRDS(file.path("E:/Important/RMP/Code/pacificfisheriesexplorer/data", "2001_2020_mexico_landings_datamares.Rds"))
+  meows_orig <- readRDS(file.path("E:/Important/RMP/Code/pacificfisheriesexplorer/data/meows/processed/meows.Rds"))
+  sst_orig <- read.csv(file.path("E:/Important/RMP/Code/pacificfisheriesexplorer/data/cobe/COBE_1891_2020_sst_by_ecoregion.csv"))
 
 # Data Build #
 years <- 2001:2019
@@ -33,10 +33,11 @@ ecoregion_choices <- c("Oregon, Washington, Vancouver Coast and Shelf",
                        "Cortezian",
                        "Mexican Tropical Pacific",
                        "Chiapas-Nicaragua")
+species_choice <- sort(unique(mexicoLandings$sci_name))
 
 # User Interface #
 ui <- fluidPage(theme = shinytheme("simplex"),
-                navbarPage("Mexican-Pacific Fisheries Viewer",
+                navbarPage("Mexican-Pacific Fisheries Explorer",
                            # Page 1: Fishery Scale #
                            tabPanel("Fishery Scale",
                                     mainPanel(
@@ -62,7 +63,13 @@ ui <- fluidPage(theme = shinytheme("simplex"),
                                       plotOutput(outputId = "plot_regions_pacific", width=1000, height=375)
                                     )),
                            # Page 3: Species Based Viewer #
-                           tabPanel("Species", "This panel is intentionally left blank"),
+                           tabPanel("Species",
+                                    mainPanel(
+                                      h1("Explore species"),
+                                      h5("species"),
+                                      selectInput(inputId = "species_select", label = "Species",
+                                                  choices = species_choice, multiple = F),
+                                    )),
                            # Page 4: Map-Based Landings Viewer #
                            tabPanel("Location", "This panel is intentionally left blank"),
                            # Page 5: Potential Random Forest Predictor #
@@ -70,7 +77,6 @@ ui <- fluidPage(theme = shinytheme("simplex"),
 
                 )
 )
-
 
 # Server #
 server <- function(input, output, session) {
@@ -80,7 +86,7 @@ server <- function(input, output, session) {
     g
   })
 
-  # Monthly Fishery Landings #
+  # Monthly Fishery Values #
   output$plot_years_value <- renderPlot({
     g <- plot_fishery_monthly_values(dataset=mexicoLandings, varyear = input$year_landings)
     g
@@ -95,6 +101,12 @@ server <- function(input, output, session) {
   # Updated Ecoregion Map #
   output$plot_regions_pacific <- renderPlot({
     g <- plot_ecoregion(datasetmeow=meows_orig, region = input$region_selects)
+    g
+  })
+
+  # Latitude Timeseries #
+  output$plot_lat <- renderPlot({
+    g <- plot_weighted_latitude(datasetlandings=mexicoLandings, datasetsst=sst_orig)
     g
   })
 }

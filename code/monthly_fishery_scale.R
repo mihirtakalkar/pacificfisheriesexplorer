@@ -13,7 +13,7 @@ plot_fishery_monthly_values <- function(dataset, varyear){
     filter(year == varyear)
 
 # Generate Graph #
-  g1 <- ggplot(scaleData, mapping = aes(x = month, y = value_mxn_tot, color = fishery_type)) +
+  g <- ggplot(scaleData, mapping = aes(x = month, y = value_mxn_tot, color = fishery_type)) +
     geom_line(size = 1.5, alpha = 0.6) +
     labs(title = "Fishery Landing Values Over Time",
          subtitle = "How do artisanal and industrial fishery revenues differ?",
@@ -22,7 +22,7 @@ plot_fishery_monthly_values <- function(dataset, varyear){
     theme(axis.title = element_text(), text = element_text(size = 14, family = "Segoe UI"))
 
 # Output #
-  g1
+  g
 }
 
 # Plot Monthly Fishery Scale Landings #
@@ -40,7 +40,7 @@ plot_fishery_monthly_landings <- function(dataset, varyear){
     filter(year == varyear)
 
   # Generate Graph #
-  g1 <- ggplot(scaleData, mapping = aes(x = month, y = landings_kg_tot, color = fishery_type)) +
+  g <- ggplot(scaleData, mapping = aes(x = month, y = landings_kg_tot, color = fishery_type)) +
     geom_line(size = 1.5, alpha = 0.6) +
     labs(title = "Fishery Landings Over Time",
          subtitle = "How do artisanal and industrial fishery landings differ?",
@@ -49,5 +49,5 @@ plot_fishery_monthly_landings <- function(dataset, varyear){
     theme(axis.title = element_text(), text = element_text(size = 14, family = "Segoe UI"))
 
   # Output #
-  g1
+  g
 }

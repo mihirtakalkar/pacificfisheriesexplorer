@@ -68,7 +68,7 @@ countries <- ne_countries(returnclass="sf", scale = "large")
     geom_sf_label(data=regionset, mapping=aes(label=ecoregion), show.legend = F, size=2.5) +
     # Crop #
     coord_sf(xlim=c(-127, -91), ylim=c(11, 49)) +
-    # Labels 3
+    # Labels 3 #
     labs(x="", y="") +
     # Theme #
     theme_bw() +
